@@ -1,0 +1,17 @@
+<div style="font-family: 'Myriad Pro',Arial,sans-serif;line-height: 1.5">
+    <center>
+        {% include "header-template.html" %}
+            <p>Dear {{ clientName }},<br></p>
+            <p>Your order for "Build It For Me" template has been placed.<br></p>
+            <p>Please find attachment of the invoice.<br></p>
+            <p style='padding-left: 50px;'>Account Number: EAS{{ memberId }}</p>
+            <p style='padding-left: 50px;'>Invoice Number: {{ invNo }}</p>
+            <p style='padding-left: 50px;'>Invoice Total: {{ cntyPriceSymbol }}{{ subTotal }}</p>
+            <p style='padding-left: 50px;'>Invoice Date: {{ invDate }}</p>
+            <p style='padding-left: 50px;'>Invoice Status: {{ invStatus }}<br><br></p>
+            <p>If you have any questions about the invoice, please do not hesitate to contact us on the details provided on your invoice. You can always download the previous or copy of this invoice from your online {{ siteName }} account from the Account section.<br><br></p>
+            <p>Sincerely<br></p>
+            <p>Your Friends at {{ siteNameBigCom }}</p>
+        {% include "footer-template.html" %}
+    </center>
+</div>

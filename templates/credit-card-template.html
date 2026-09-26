@@ -1,0 +1,8 @@
+<div style="font-family: 'Myriad Pro',Arial,sans-serif;line-height: 1.5">
+<center>
+{% include "header-template.html" %}
+    <p>Hello  {{ invClientName }} ,<br></p><p>We have been unable to charge the credit/debit card for your account. If you purchased other {{ siteNameBigCom }} services with this card, those services may also be affected. To prevent any service interruptions, please update your payment information.<br /><br></p>
+    <p><a href="{{ profileUrl }}">Click Here</a> to update your Credit Card.</p><br/><b style="font-weight:bold;">Error Description :</b> {{ error }} <br/><br/><b style="font-weight:bold;">Credit Card Number :</b> {{ cardNumber }}<br/><br/><p>Thank You<br>Support</p>
+{% include "footer-template.html" %}
+</center>
+</div>

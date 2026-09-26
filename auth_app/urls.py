@@ -1,0 +1,30 @@
+from django.urls import path
+from .views import auth_views
+
+urlpatterns = [
+    path('auth/token', auth_views.token, name='token'),
+    path('auth/changePlan', auth_views.changePlan, name='changePlan'),
+    path('auth/verifiedOtp', auth_views.verifiedOtp, name='verifiedOtp'),
+    path('auth/processActivation', auth_views.processActivation, name='processActivation'),
+    path('auth/changepassword', auth_views.changepassword, name='changepassword'),
+    path('auth/resendActivationEmail/<int:tenantId>', auth_views.resendActivationEmail, name='resendActivationEmail'),
+    path('auth/forgotPassword', auth_views.forgotPassword, name='forgotPassword'),
+    path('auth/forgotPasswordVerify', auth_views.forgotPasswordVerify, name='forgotPasswordVerify'),
+    path('auth/resetPassword', auth_views.resetPassword, name='resetPassword'),
+    path('auth/onboarding/<int:step>', auth_views.onboarding, name='onboarding'),
+    path('auth/logout', auth_views.logout, name='logout'),
+    path('auth/checkEmail/<str:email>', auth_views.checkEmail, name='checkEmail'),
+    path('auth/checkActiveSubaccount', auth_views.checkActiveSubaccount, name='checkActiveSubaccount'),
+    path('auth/activeSubaccount', auth_views.activeSubaccount, name='activeSubaccount'),
+    path('auth/sendOtpOnboarding', auth_views.sendOtpOnboarding, name='sendOtpOnboarding'),
+    path('auth/addOptInOptOutTemplate', auth_views.addOptInOptOutTemplate, name='addOptInOptOutTemplate'),
+    path('auth/deleteOptInOptOutTemplate', auth_views.deleteOptInOptOutTemplate, name='deleteOptInOptOutTemplate'),
+    path('auth/updateGroupFields', auth_views.updateGroupFields, name='updateGroupFields'),
+    path('auth/sendOtpAuthenticationCode/<int:tenantId>', auth_views.sendOtpAuthenticationCode, name='sendOtpAuthenticationCode'),
+    path('auth/checkLogin', auth_views.checkLogin, name='checkLogin'),
+    path('auth/verifyEmail', auth_views.verifyEmail, name='verifyEmail'),
+    path('auth/checkUsername', auth_views.checkUsername, name='checkUsername'),
+    path('auth/registration', auth_views.registration, name='registration'),
+    path('auth/cancelRegistration', auth_views.cancelRegistration, name='cancelRegistration'),
+    path('auth/checkRegistrationLink', auth_views.checkRegistrationLink, name='checkRegistrationLink'),
+]

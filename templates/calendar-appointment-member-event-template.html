@@ -1,0 +1,45 @@
+<div style="font-family: 'Myriad Pro',Arial,sans-serif;line-height: 1.5">
+
+    <center style="width:100%;min-width:580px">
+        <table
+            style="border-spacing:0;border-collapse:collapse;padding:0;vertical-align:top;text-align:inherit;width:580px;margin:20px auto">
+            <tbody>
+                <tr style="padding:0;vertical-align:top;text-align:left">
+                    <td
+                        style="word-break:break-word;padding:0;vertical-align:top;text-align:left;font-family:'Myriad Pro',Arial,sans-serif;font-weight:normal;margin:0;line-height:20px;font-size:14px;border-collapse:collapse!important">
+
+                        <p>{{ customerLogo|safe }}</p>
+                        <p>Hi {{ memberName }},<br /></p>
+                        <p>A new event has been scheduled. <br /><br /></p>
+                        <p><b>Event Type:</b></p>
+                        <p>{{ eventType }}<br /><br /></p>
+                        <p><b>Invitee:</b></p>
+                        <p>{{ inviteeName }}<br /><br /></p>
+                        <p><b>Invitee Email:</b></p>
+                        <p>{{ inviteeEmail }}<br /><br /></p>
+                        {% if guestsList != "" %}
+                        <p><b>Guests:</b></p>
+                        <p>{{ guestsList|safe }}<br /><br /></p>
+                        {% endif %}
+                        <p><b>Invitee Date/Time:</b></p>
+                        <p>{{ meetingDateTime }}<br /><br /></p>
+                        <p><b>Invitee Timezone:</b></p>
+                        <p>{{ inviteeTimezone }}<br /><br /></p>
+                        <p><b>Your Date/Time:</b></p>
+                        <p>{{ yourDateTime }}<br /><br /></p>
+                        <p><b>Your Timezone:</b></p>
+                        <p>{{ yourTimezone }}<br /><br /></p>
+                        {% if comment != "" %}
+                        <p><b>Kindly see the details of the meeting.</b></p>
+                        <p>{{ comment|safe }}<br /><br /></p>
+                        {% endif %}
+                        {% if webConference != "" %}
+                        <p>{{ webConference|safe }}<br /><br /></p>
+                        {% endif %}
+                        <p>Thank You<br>Support</p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </center>
+</div>

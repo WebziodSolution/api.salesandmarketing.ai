@@ -1,0 +1,16 @@
+<div style="font-family: 'Myriad Pro',Arial,sans-serif;line-height: 1.5">
+<center>
+{% include "header-template.html" %}
+    <div><br><strong>Tenant Id : </strong>{{ memberId }}</div>
+
+    <div><br><strong>Request URL :</strong></div>
+    <div>{{ requestURL }}</div>
+
+    <div><br><strong>Error Message :</strong></div>
+    <div>{{ errorMessage }}</div>
+
+    <div><br><strong>Error Details :</strong></div>
+    <div>{{ errorDetails }}</div>
+{% include "footer-template.html" %}
+</center>
+</div>

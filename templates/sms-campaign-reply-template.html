@@ -1,0 +1,22 @@
+<div style="font-family: 'Myriad Pro',Arial,sans-serif;line-height: 1.5">
+    <center>
+        <div style="width: 600px;">
+            <div><img src="{{ SITEURL }}img/logo.png" style="max-width:170px;max-height: 70px;" /></div>
+            <div style="background-color: #f0f6ff; padding: 20px; margin-top: 20px;">
+                <div style="font-size: 28px; font-weight: bold;">You received a reply from SMS campaign <b>{{ Heading }}</b></div>
+            </div>
+            <div style="padding: 50px 0px;">
+                <div style="text-align:left">Hi {{ memberName }}</div>
+                <div style="text-align:left">You received a reply from SMS campaign {{ Heading }}.</div>
+                <div style="text-align:left">**** SMS Reply ****</div>
+                <div style="text-align:left">{{ userReply }}</div>
+            </div>
+            <div style="color: #547dbf; padding: 20px 0px;">
+                <div>&copy;2001-{% now "Y" %} All Rights Reserved.</div>
+                <div>{{ siteName }} &reg; is a division of {{ mainCompanyName }}.</div>
+                <div>Email : <a style="color: #547dbf; text-decoration: none;" href="mailto:{{ toAdminSupportEmail }}">{{ toAdminSupportEmail }}</a></div>
+            </div>
+            <div><img src="{{ SITEURL }}img/logo.png" style="max-width:170px;max-height: 70px;" /></div>
+        </div>
+    </center>
+</div>
