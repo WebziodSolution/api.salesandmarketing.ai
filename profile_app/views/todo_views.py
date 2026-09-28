@@ -227,30 +227,30 @@ def getTodoList(request: Request):
             todos_data = TodoSerializer(todos_list, many=True).data
 
             res_body['todos'] = todos_data
-            res_body['totalData'] = total_count
-            res_body['totalCount'] = total_count
+            # res_body['totalData'] = total_count
+            # res_body['totalCount'] = total_count
             res_body['totalTodos'] = total_count
-            res_body['totalElements'] = total_count
-            res_body['totalPages'] = total_pages
+            # res_body['totalElements'] = total_count
+            # res_body['totalPages'] = total_pages
             res_body['getTotalPages'] = total_pages
-            res_body['pageNumber'] = current_page
+            # res_body['pageNumber'] = current_page
             res_body['getNumber'] = current_page
-            res_body['pageSize'] = size
+            # res_body['pageSize'] = size
             res_body['getSize'] = size
             return api_response(200, "Fetch Todos Successfully", res_body)
         else:
             todos_data = TodoSerializer(todos_qs, many=True).data
             total_count = len(todos_data)
             res_body['todos'] = todos_data
-            res_body['totalData'] = total_count
-            res_body['totalCount'] = total_count
+            # res_body['totalData'] = total_count
+            # res_body['totalCount'] = total_count
             res_body['totalTodos'] = total_count
-            res_body['totalElements'] = total_count
-            res_body['totalPages'] = 1
+            # res_body['totalElements'] = total_count
+            # res_body['totalPages'] = 1
             res_body['getTotalPages'] = 1
-            res_body['pageNumber'] = 0
+            # res_body['pageNumber'] = 0
             res_body['getNumber'] = 0
-            res_body['pageSize'] = total_count
+            # res_body['pageSize'] = total_count
             res_body['getSize'] = total_count
             return api_response(200, "Fetch Todos Successfully", res_body)
 
