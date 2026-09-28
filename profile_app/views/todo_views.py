@@ -6,6 +6,7 @@ from datetime import datetime, date
 from django.conf import settings
 from django.db import connection, models
 from django.db.models import Q, F
+from django.core.paginator import Paginator
 from django.utils import timezone
 from rest_framework.decorators import api_view
 from rest_framework.request import Request
@@ -123,7 +124,7 @@ def saveTodo(request: Request):
 def getTodoList(request: Request):
     """
     Get list of todos for the authenticated tenant.
-    Supports optional filtering by status, isToday, and search keyword.
+    Supports optional filtering by status, isToday, search keyword, sorting, and pagination.
     """
     res_body = dict()
     try:
@@ -139,26 +140,119 @@ def getTodoList(request: Request):
 
         is_today_filter = request.GET.get('isToday') if 'isToday' in request.GET else request.GET.get('is_today')
         is_today_bool = False
-        if is_today_filter is not None and is_today_filter != '':
+        has_today_filter = False
+        if is_today_filter is not None and str(is_today_filter).strip() != '':
+            has_today_filter = True
             is_today_bool = str(is_today_filter).strip().lower() in ('true', '1', 't', 'y', 'yes')
             todos_qs = todos_qs.filter(is_today=is_today_bool)
 
-        search = request.GET.get('search')
-        if search:
-            todos_qs = todos_qs.filter(
-                Q(task__icontains=search) | Q(description__icontains=search)
+        search = request.GET.get('search') if 'search' in request.GET else request.GET.get('searchKey')
+        if search and str(search).strip():
+            search_term = str(search).strip()
+            search_q = (
+                Q(task__icontains=search_term) |
+                Q(description__icontains=search_term)               
             )
+            if search_term.isdigit():
+                search_q |= Q(id=int(search_term))
+            todos_qs = todos_qs.filter(search_q)
 
-        if is_today_bool:
-            # Order by PRIORITY_INDEX (e.g. 1, 2, 4...)
-            todos_qs = todos_qs.order_by(F('priority_records__priority_index').asc(nulls_last=True), '-id')
+        sort_field = request.GET.get('sortField') or request.GET.get('sort_field')
+        sort_direction = request.GET.get('sortDirection') or request.GET.get('sort_direction') or 'asc'
+
+        field_map = {
+            'id': 'id',
+            'task': 'task',
+            'dueDate': 'due_date',
+            'due_date': 'due_date',
+            'status': 'status',
+            'type': 'type',
+        }
+
+        if sort_field and sort_field in field_map:
+            db_field = field_map[sort_field]
+            if str(sort_direction).lower() == 'desc':
+                todos_qs = todos_qs.order_by(F(db_field).desc(nulls_last=True))
+            else:
+                todos_qs = todos_qs.order_by(F(db_field).asc(nulls_last=True))
         else:
-            todos_qs = todos_qs.order_by('-id')
+            if has_today_filter and is_today_bool:
+                # Order by PRIORITY_INDEX (e.g. 1, 2, 4...)
+                todos_qs = todos_qs.order_by(F('priority_records__priority_index').asc(nulls_last=True), '-id')
+            else:
+                todos_qs = todos_qs.order_by('-id')
 
-        todos_data = TodoSerializer(todos_qs, many=True).data
-        res_body['todos'] = todos_data
-        return api_response(200, "Fetch Todos Successfully", res_body)
+        page_param = request.GET.get('page') if 'page' in request.GET else request.GET.get('pageNumber')
+        if page_param is None:
+            page_param = request.GET.get('pageNo')
 
+        size_param = request.GET.get('size') if 'size' in request.GET else request.GET.get('pageSize')
+        if size_param is None:
+            size_param = request.GET.get('perPage')
+
+        if size_param is not None and str(size_param).strip() != '':
+            try:
+                size = int(size_param)
+                if size <= 0:
+                    size = 10
+            except ValueError:
+                size = 10
+
+            try:
+                page = int(page_param) if page_param is not None else 0
+                if page < 0:
+                    page = 0
+            except ValueError:
+                page = 0
+
+            paginator = Paginator(todos_qs, size)
+            total_count = paginator.count
+            total_pages = paginator.num_pages
+
+            # Django Paginator is 1-indexed, API/Frontend is 0-indexed
+            page_number = page + 1
+            if page_number > total_pages and total_pages > 0:
+                page_number = total_pages
+            elif page_number < 1:
+                page_number = 1
+
+            try:
+                page_obj = paginator.page(page_number)
+                todos_list = page_obj.object_list
+                current_page = page_obj.number - 1
+            except Exception:
+                todos_list = []
+                current_page = 0
+
+            todos_data = TodoSerializer(todos_list, many=True).data
+
+            res_body['todos'] = todos_data
+            res_body['totalData'] = total_count
+            res_body['totalCount'] = total_count
+            res_body['totalTodos'] = total_count
+            res_body['totalElements'] = total_count
+            res_body['totalPages'] = total_pages
+            res_body['getTotalPages'] = total_pages
+            res_body['pageNumber'] = current_page
+            res_body['getNumber'] = current_page
+            res_body['pageSize'] = size
+            res_body['getSize'] = size
+            return api_response(200, "Fetch Todos Successfully", res_body)
+        else:
+            todos_data = TodoSerializer(todos_qs, many=True).data
+            total_count = len(todos_data)
+            res_body['todos'] = todos_data
+            res_body['totalData'] = total_count
+            res_body['totalCount'] = total_count
+            res_body['totalTodos'] = total_count
+            res_body['totalElements'] = total_count
+            res_body['totalPages'] = 1
+            res_body['getTotalPages'] = 1
+            res_body['pageNumber'] = 0
+            res_body['getNumber'] = 0
+            res_body['pageSize'] = total_count
+            res_body['getSize'] = total_count
+            return api_response(200, "Fetch Todos Successfully", res_body)
 
     except Exception as e:
         logger.error(f"GetTodoList Error: {e}", exc_info=True)
@@ -226,6 +320,47 @@ def updateTodoStatus(request: Request):
 
     except Exception as e:
         logger.error(f"UpdateTodoStatus Error: {e}", exc_info=True)
+        return api_response(500, "Error Processing Request", res_body)
+
+
+@api_view(['POST', 'PUT'])
+def updateTodoIsToday(request: Request):
+    """
+    Update only isToday status (true/false) for a Todo.
+    """
+    res_body = dict()
+    try:
+        tenant_id = get_final_tenant_id(request=request)
+        if not tenant_id:
+            return api_response(401, "Tenant ID not found", res_body)
+
+        data = request.data
+        todo_id = data.get('todoId') or data.get('id')
+        is_today_raw = data.get('isToday') if 'isToday' in data else data.get('is_today')
+
+        if not todo_id:
+            return api_response(400, "Todo ID is required", res_body)
+
+        if is_today_raw is None:
+            return api_response(400, "isToday is required", res_body)
+
+        if isinstance(is_today_raw, str):
+            is_today = is_today_raw.strip().lower() in ('true', '1', 't', 'y', 'yes')
+        else:
+            is_today = bool(is_today_raw)
+
+        todo = Todos.objects.filter(id=int(todo_id), tenant_id=tenant_id).first()
+        if not todo:
+            return api_response(404, "Todo Not Found", res_body)
+
+        todo.is_today = is_today
+        todo.save()
+
+        res_body['todo'] = TodoSerializer(todo).data
+        return api_response(200, "Todo isToday Updated Successfully", res_body)
+
+    except Exception as e:
+        logger.error(f"UpdateTodoIsToday Error: {e}", exc_info=True)
         return api_response(500, "Error Processing Request", res_body)
 
 

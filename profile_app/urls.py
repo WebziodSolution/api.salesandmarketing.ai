@@ -104,6 +104,7 @@ urlpatterns = [
     path('todos/getTodoList', todo_views.getTodoList, name='getTodoList'),
     path('todos/getTodoById/<int:todoId>', todo_views.getTodoById, name='getTodoById'),
     path('todos/updateTodoStatus', todo_views.updateTodoStatus, name='updateTodoStatus'),
+    path('todos/updateTodoIsToday', todo_views.updateTodoIsToday, name='updateTodoIsToday'),
     path('todos/deleteTodo/<int:todoId>', todo_views.deleteTodo, name='deleteTodoById'),
 
     # Todo Attachments
